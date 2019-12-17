@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <script type="text/javascript">
+            !function(t,e){if(void 0===e[t]){e[t]=function(){e[t].clients.push(this),this._init=[Array.prototype.slice.call(arguments)]},e[t].clients=[];for(var r=function(t){return function(){return this["_"+t]=this["_"+t]||[],this["_"+t].push(Array.prototype.slice.call(arguments)),this}},s=["blockEvents","unblockEvents","setSignedMode","setAnonymousMode","resetUUID","addRecord","fetchGlobalID","set","trackEvent","trackPageview","trackClicks","ready","fetchUserSegments",],n=0;n<s.length;n++){var c=s[n];e[t].prototype[c]=r(c)}var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=("https:"===document.location.protocol?"https:":"http:")+"//cdn.treasuredata.com/sdk/2.1/td.min.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)}}("Treasure",this);
+            
+            var createImage = function(url) {
+            var img = document.createElement('img');
+            img.src = (('https:' == document.location.protocol) ? 'https://' : 'http://') + url;
+            img.width=1;img.height=1;img.style.display='none';
+            document.body.appendChild(img);
+            };
+            
+            var syncCallback = function() {
+            var tdClientId = td.client.track.uuid;
+            var region = td.client.host.split('.')[0];
+            var account = (region === 'in' ? 'aws-us-':(region === 'tokyo' ? 'aws-tokyo-':'idcf-')) + td.client.writeKey.split('/')[0];
+            var dbmUrl = 'cm.g.doubleclick.net/pixel?google_nid=treasuredata_dmp&google_cm&td_write_key=8151/fcd628065149d648b80f11448b4083528c0d8a91&td_global_id=td_global_id' + '&td_client_id=' + tdClientId + '&account=' + account + '&td_host=' + document.location.host;
+            createImage(dbmUrl);
+            };
+            
+            var td = new Treasure({
+            host: 'in.treasuredata.com',
+            writeKey: '10452/de7bec368253e78d34c4ff6c9d52145a32f117b9',
+            database: 'aws_s3_sato',
+            startInSignedMode: true
+            });
+            
+            //Profile API
+            var profile_token = 'fe4796f3-eb0a-483c-b391-2ed076460353'
+            let td_seg_values;
+            
+            var success = function(values) {
+            td_seg_values = values[0]["values"];
+            console.log({
+            'key': values[0]["key"],
+            'segments': values[0]["values"],
+            'td_seg_values': td_seg_values
+            });
+            //セグメント受領後のページリダイレクト処理
+            if ( (typeof td_seg_values === "undefined") || (td_seg_values == '') || (td_seg_values == null)) {
+            //①データなし
+            //処理なし（ページをそのまま表示）
+            ;
+            } else　if (td_seg_values == 26219) {
+            //②アプリ利用
+            location.href="";
+            } else if (td_seg_values == 10500) {
+            //③アプリ利用してない
+            location.href="";
+            }　else if (td_seg_values == 26222) {
+            //④TLC未会員
+            location.href="";
+            }
+            
+            }
+            var error = function(err) {};
+            
+            var fetchSegments = function(){
+            td.fetchUserSegments({
+            audienceToken: [profile_token],
+            keys: {
+                user_id : 'TEST02459259',
+                td_country_name: 'Japan'
+            }
+            }, success, error);
+            };
+            
+            td.set('$global', 'td_global_id', 'td_global_id');
+            td.trackPageview('test_accsess',syncCallback);
+            td.fetchGlobalID(fetchSegments);
+            </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    test site for a case
+</body>
+</html>
